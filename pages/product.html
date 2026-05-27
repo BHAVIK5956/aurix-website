@@ -12,9 +12,9 @@
   <nav class="navbar">
     <a href="../index.html" class="logo"><img src="../assets/aurix-logo.svg" alt="AURIX" height="32"></a>
     <ul class="nav-links">
-      <li><a href="#" id="navHome">Home</a></li>
-      <li><a href="#" id="navDashboard" style="display:none;">Dashboard</a></li>
-      <li><a href="#" id="navSignin" style="display:none;">Sign In</a></li>
+      <li><a href="../index.html" class="nav-back-home">Home</a></li>
+      <li><a href="dashboard.html" id="navDashboard" style="display:none;">Dashboard</a></li>
+      <li><a href="login.html" id="navSignin">Sign In</a></li>
     </ul>
   </nav>
 
@@ -28,24 +28,17 @@
 
   <script src="../js/main.js"></script>
   <script>
-    // Smart nav — show correct links based on auth state
+    // Handle nav based on auth — runs immediately
     document.addEventListener('DOMContentLoaded', () => {
       const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
-      const navHome = document.getElementById('navHome');
-      const navDashboard = document.getElementById('navDashboard');
-      const navSignin = document.getElementById('navSignin');
-
-      // Home always goes back to homepage
-      navHome.href = '../index.html';
-
+      const navDash = document.getElementById('navDashboard');
+      const navSign = document.getElementById('navSignin');
       if (user) {
-        // Logged in — show Dashboard
-        navDashboard.style.display = '';
-        navDashboard.href = 'dashboard.html';
+        navDash.style.display = '';
+        navSign.style.display = 'none';
       } else {
-        // Not logged in — show Sign In
-        navSignin.style.display = '';
-        navSignin.href = 'login.html';
+        navDash.style.display = 'none';
+        navSign.style.display = '';
       }
     });
   </script>

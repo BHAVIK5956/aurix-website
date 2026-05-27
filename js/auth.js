@@ -14,33 +14,47 @@ const firebaseConfig = {
 };
 
 // ── Supabase Configuration ──
-// TODO: Replace with your actual Supabase config
-// Get this from: Supabase Dashboard → Project Settings → API
 const SUPABASE_URL = "https://spcznnskyfxcjqtoywdv.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwY3pubnNreWZ4Y2pxdG95d2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NTk0MzQsImV4cCI6MjA5NTQzNTQzNH0.fcjooZWZQQGD-WpWjBFtU9QWu8pnLK5PgjmncBCQhb0";
 
 // ── Auth State ──
 let currentUser = null;
+let firebaseInitialized = false;
 
-// Initialize Firebase (when config is set)
+// ── Initialize Firebase ──
 function initFirebase() {
   if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-    console.warn('Firebase not configured yet. Auth buttons will show placeholder.');
+    console.warn('Firebase not configured yet.');
     return false;
   }
   try {
-    firebase.initializeApp(firebaseConfig);
+    if (!firebaseInitialized) {
+      firebase.initializeApp(firebaseConfig);
+      firebaseInitialized = true;
+    }
+
+    // Listen for auth state changes — this is the KEY to persistence
+    // Firebase remembers the session in IndexedDB automatically
     firebase.auth().onAuthStateChanged((user) => {
       currentUser = user;
       if (user) {
-        localStorage.setItem('aurix_user', JSON.stringify({
+        // Save/update user data in localStorage AND Supabase
+        const userData = {
           name: user.displayName || 'User',
           email: user.email,
           photo: user.photoURL || null,
           uid: user.uid
-        }));
+        };
+        localStorage.setItem('aurix_user', JSON.stringify(userData));
+        saveUserToSupabase(user);
+        // Update nav on every page because auth state changed
+        updateAllNavs();
+      } else {
+        localStorage.removeItem('aurix_user');
+        updateAllNavs();
       }
     });
+
     return true;
   } catch (e) {
     console.error('Firebase init error:', e);
@@ -48,17 +62,71 @@ function initFirebase() {
   }
 }
 
+// ── Update Nav on ALL Pages ──
+function updateAllNavs() {
+  const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
+
+  // Homepage nav (#authNavItem)
+  const authNavItem = document.getElementById('authNavItem');
+  if (authNavItem) {
+    if (user) {
+      // Show profile avatar + name + Dashboard link
+      authNavItem.innerHTML = `
+        <a href="pages/dashboard.html" class="nav-user-profile">
+          <div class="nav-avatar">${(user.name || 'U')[0].toUpperCase()}</div>
+          <span class="nav-username">${user.name || 'User'}</span>
+        </a>
+      `;
+    } else {
+      authNavItem.innerHTML = `<a href="pages/login.html" class="btn btn-primary nav-signin">Sign In</a>`;
+    }
+  }
+
+  // Dashboard page nav (#dashboardAuthNav)
+  const dashboardAuth = document.getElementById('dashboardAuthNav');
+  if (dashboardAuth) {
+    if (user) {
+      dashboardAuth.innerHTML = `
+        <div class="nav-user-profile">
+          <div class="nav-avatar">${(user.name || 'U')[0].toUpperCase()}</div>
+          <span class="nav-username">${user.name || 'User'}</span>
+        </div>
+      `;
+    }
+  }
+
+  // Product page nav
+  const navDashboardE = document.getElementById('navDashboard');
+  const navSigninE = document.getElementById('navSignin');
+  if (navDashboardE && navSigninE) {
+    if (user) {
+      navDashboardE.style.display = '';
+      navDashboardE.href = 'dashboard.html';
+      navSigninE.style.display = 'none';
+    } else {
+      navDashboardE.style.display = 'none';
+      navSigninE.style.display = '';
+      navSigninE.href = 'login.html';
+    }
+  }
+
+  // Homepage hero buttons — change "Get Started" to "Go to Dashboard" if logged in
+  const heroButtons = document.querySelector('.hero-buttons');
+  if (heroButtons && user) {
+    const getStartedBtn = heroButtons.querySelector('a[href="pages/login.html"]');
+    if (getStartedBtn) {
+      getStartedBtn.href = 'pages/dashboard.html';
+      getStartedBtn.textContent = 'Go to Dashboard →';
+    }
+  }
+}
+
 // ── Google Auth ──
 function handleGoogleAuth() {
-  if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-    showAlert('Firebase is not configured yet. Please set up Firebase Auth first.', 'error');
-    return;
-  }
   const provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      saveUserToSupabase(user);
+    .then(() => {
+      // onAuthStateChanged will handle the rest
       redirectToDashboard();
     })
     .catch((error) => {
@@ -68,15 +136,9 @@ function handleGoogleAuth() {
 
 // ── GitHub Auth ──
 function handleGitHubAuth() {
-  if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-    showAlert('Firebase is not configured yet. Please set up Firebase Auth first.', 'error');
-    return;
-  }
   const provider = new firebase.auth.GithubAuthProvider();
   firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      saveUserToSupabase(user);
+    .then(() => {
       redirectToDashboard();
     })
     .catch((error) => {
@@ -87,10 +149,6 @@ function handleGitHubAuth() {
 // ── Email/Password Sign Up ──
 function handleEmailSignUp(e) {
   e.preventDefault();
-  if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-    showAlert('Firebase is not configured yet.', 'error');
-    return;
-  }
   const name = document.getElementById('signupName').value;
   const email = document.getElementById('signupEmail').value;
   const password = document.getElementById('signupPassword').value;
@@ -100,9 +158,7 @@ function handleEmailSignUp(e) {
       return result.user.updateProfile({ displayName: name });
     })
     .then(() => {
-      const user = firebase.auth().currentUser;
-      saveUserToSupabase(user);
-      showAlert('Account created successfully! Redirecting...', 'success');
+      showAlert('Account created! Redirecting...', 'success');
       setTimeout(redirectToDashboard, 1000);
     })
     .catch((error) => {
@@ -113,16 +169,11 @@ function handleEmailSignUp(e) {
 // ── Email/Password Sign In ──
 function handleEmailSignIn(e) {
   e.preventDefault();
-  if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-    showAlert('Firebase is not configured yet.', 'error');
-    return;
-  }
   const email = document.getElementById('signinEmail').value;
   const password = document.getElementById('signinPassword').value;
 
   firebase.auth().signInWithEmailAndPassword(email, password)
-    .then((result) => {
-      saveUserToSupabase(result.user);
+    .then(() => {
       redirectToDashboard();
     })
     .catch((error) => {
@@ -132,10 +183,6 @@ function handleEmailSignIn(e) {
 
 // ── Save User to Supabase ──
 async function saveUserToSupabase(user) {
-  if (SUPABASE_URL.includes("YOUR_PROJECT")) {
-    console.warn('Supabase not configured yet.');
-    return;
-  }
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/user`, {
       method: 'POST',
@@ -160,11 +207,10 @@ async function saveUserToSupabase(user) {
 
 // ── Logout ──
 function handleLogout() {
-  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-    firebase.auth().signOut();
-  }
-  localStorage.removeItem('aurix_user');
-  window.location.href = 'login.html';
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem('aurix_user');
+    window.location.href = '../index.html';
+  });
 }
 
 // ── Redirect to Dashboard ──
@@ -193,15 +239,18 @@ function switchTab(tab) {
 
   if (switchText) {
     switchText.innerHTML = tab === 'signin'
-      ? "Don't have an account? <a href='#' onclick=\"switchTab('signup')\">Sign up</a>"
-      : "Already have an account? <a href='#' onclick=\"switchTab('signin')\">Sign in</a>";
+      ? "Don't have an account? <a href='#' onclick=\"switchTab('signup'); return false;\">Sign up</a>"
+      : "Already have an account? <a href='#' onclick=\"switchTab('signin'); return false;\">Sign in</a>";
   }
 }
 
-// ── Check Auth on Protected Pages ──
+// ── Check Auth on Protected Pages (Dashboard) ──
+// This checks IMMEDIATELY on page load, before Firebase async check completes
 function requireAuth() {
+  // Check localStorage first for instant redirect decision
   const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
   if (!user) {
+    // Not even in localStorage — definitely not logged in
     window.location.href = 'login.html';
     return null;
   }

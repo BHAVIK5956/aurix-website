@@ -19,6 +19,7 @@
     <ul class="nav-links">
       <li><a href="dashboard.html" class="nav-link-dashboard active">Dashboard</a></li>
       <li><a href="#products" class="nav-link-dashboard" data-section="products">Products</a></li>
+      <li id="dashboardAuthNav"></li>
       <li><button class="btn btn-outline" style="padding:6px 16px;font-size:0.85rem;" onclick="handleLogout()">Logout</button></li>
     </ul>
   </nav>
@@ -93,44 +94,44 @@
   <script src="../js/auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Check auth — if not logged in, redirect to login
+      // Check auth immediately from localStorage (instant, no Firebase wait)
       const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
       if (!user) {
         window.location.href = 'login.html';
         return;
       }
+      // Show user data immediately
       document.getElementById('userName').textContent = `Welcome back, ${user.name || 'User'}!`;
       document.getElementById('userEmail').textContent = user.email || '';
-      const initial = (user.name || 'U')[0].toUpperCase();
-      document.getElementById('userAvatar').textContent = initial;
+      document.getElementById('userAvatar').textContent = (user.name || 'U')[0].toUpperCase();
 
       // Dashboard scroll-based nav highlighting
-      const sections = document.querySelectorAll('#dashboard, #products');
-      const navLinks = document.querySelectorAll('.nav-link-dashboard');
+      const dashSections = document.querySelectorAll('#dashboard, #products');
+      const dashNavLinks = document.querySelectorAll('.nav-link-dashboard');
 
-      window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(section => {
-          const sectionTop = section.offsetTop - 100;
-          if (window.scrollY >= sectionTop) {
+      function updateDashNav() {
+        let current = 'dashboard';
+        dashSections.forEach(section => {
+          const top = section.offsetTop - 100;
+          if (window.scrollY >= top) {
             current = section.getAttribute('id');
           }
         });
-
-        navLinks.forEach(link => {
+        dashNavLinks.forEach(link => {
           link.classList.remove('active');
-          if (link.getAttribute('data-section') === current || 
+          if (link.getAttribute('data-section') === current ||
               (current === 'dashboard' && link.getAttribute('href') === 'dashboard.html')) {
             link.classList.add('active');
           }
         });
-
-        // Default: Dashboard active at top
         if (window.scrollY < 200) {
-          navLinks.forEach(link => link.classList.remove('active'));
-          navLinks[0].classList.add('active');
+          dashNavLinks.forEach(l => l.classList.remove('active'));
+          dashNavLinks[0].classList.add('active');
         }
-      });
+      }
+
+      window.addEventListener('scroll', updateDashNav);
+      updateDashNav();
     });
   </script>
 </body>
