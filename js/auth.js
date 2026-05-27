@@ -371,22 +371,27 @@ function generateTOTPSecret() {
 function showTwoFactorSetup(qrData, secret) {
   const modal = document.getElementById('twoFactorModal');
   if (!modal) return;
-
   modal.style.display = 'flex';
   document.getElementById('twoFactorSecret').textContent = secret;
-
   const qrContainer = document.getElementById('qrcode');
   if (!qrContainer) return;
   qrContainer.innerHTML = '';
 
-  // Use local QR generator (no external dependencies)
+  // Use qrcode-generator library (bundled locally, no CDN)
   if (typeof QRCodeGen !== 'undefined') {
-    const success = QRCodeGen.generateImage(qrData, 'qrcode');
-    if (!success) {
-      qrContainer.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.85rem;">⚠️ Could not generate QR. Use the key below.</p>';
+    try {
+      const qr = QRCodeGen(0, 'M');
+      qr.addData(qrData);
+      qr.make();
+      // Generate SVG QR code
+      const svg = qr.createSvgTag(4, 8);
+      qrContainer.innerHTML = svg;
+    } catch (e) {
+      console.error('QR error:', e);
+      qrContainer.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.85rem;">⚠️ QR error. Use the key below.</p>';
     }
   } else {
-    qrContainer.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.85rem;">⚠️ QR generator not loaded. Use the key below.</p>';
+    qrContainer.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.85rem;">⚠️ QR library not loaded.</p>';
   }
 }
 
