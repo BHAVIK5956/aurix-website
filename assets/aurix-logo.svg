@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="520" height="120">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00BFA6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#008975;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- "Aurix" text in brand teal -->
+  <text x="8" y="85" font-family="'Space Grotesk', 'Inter', sans-serif" font-size="78" font-weight="800" fill="#00BFA6" letter-spacing="-3">Aurix</text>
+
+  <!-- Stylized final "A" -->
+  <g transform="translate(340, 22)">
+    <!-- Main A shape -->
+    <polygon points="42,85 0,85 50,10 72,10 122,85 95,85 80,58 32,58" fill="url(#brandGrad)"/>
+    <!-- Crossbar -->
+    <polygon points="36,58 80,58 72,40 44,40" fill="#00BFA6" opacity="0.3"/>
+    <!-- Left circuit node -->
+    <line x1="8" y1="40" x2="22" y2="40" stroke="#00F0D8" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="6" cy="40" r="5" fill="#00F0D8"/>
+    <!-- Right circuit node -->
+    <line x1="100" y1="40" x2="114" y2="40" stroke="#00F0D8" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="116" cy="40" r="5" fill="#00F0D8"/>
+    <!-- Top swoosh -->
+    <path d="M 50 18 Q 68 5 88 12" stroke="#00F0D8" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="90" cy="11" r="4" fill="#00F0D8"/>
+    <!-- Bottom swoosh -->
+    <path d="M 35 72 Q 20 82 8 75" stroke="#00F0D8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="6" cy="75" r="3.5" fill="#00F0D8"/>
+  </g>
+</svg>

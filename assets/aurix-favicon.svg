@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00BFA6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#008975;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#favGrad)"/>
+  <!-- Stylized A -->
+  <polygon points="50,15 15,85 28,85 38,65 62,65 72,85 85,85 50,15" fill="#FFFFFF"/>
+  <polygon points="42,58 58,58 50,42 42,42" fill="url(#favGrad)"/>
+  <!-- Circuit accent -->
+  <circle cx="50" cy="22" r="4" fill="#00F0D8"/>
+</svg>
