@@ -16,8 +16,8 @@ const firebaseConfig = {
 // ── Supabase Configuration ──
 // TODO: Replace with your actual Supabase config
 // Get this from: Supabase Dashboard → Project Settings → API
-const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+const SUPABASE_URL = "https://spcznnskyfxcjqtoywdv.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwY3pubnNreWZ4Y2pxdG95d2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NTk0MzQsImV4cCI6MjA5NTQzNTQzNH0.fcjooZWZQQGD-WpWjBFtU9QWu8pnLK5PgjmncBCQhb0";
 
 // ── Auth State ──
 let currentUser = null;
@@ -137,7 +137,7 @@ async function saveUserToSupabase(user) {
     return;
   }
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+    await fetch(`${SUPABASE_URL}/rest/v1/user`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
