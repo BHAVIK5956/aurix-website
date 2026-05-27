@@ -4,15 +4,13 @@
 // ============================================
 
 // ── Firebase Configuration ──
-// TODO: Replace with your actual Firebase config
-// Get this from: Firebase Console → Project Settings → Web App
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAblqUFOmaeCkBKDdcZdjqy8719qnyfUXA",
+  authDomain: "aurix-8ee5a.firebaseapp.com",
+  projectId: "aurix-8ee5a",
+  storageBucket: "aurix-8ee5a.firebasestorage.app",
+  messagingSenderId: "1092104386501",
+  appId: "1:1092104386501:web:0d4df8372501dacfe77dac"
 };
 
 // ── Supabase Configuration ──
