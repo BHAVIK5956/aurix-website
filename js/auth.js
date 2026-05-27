@@ -377,43 +377,20 @@ function showTwoFactorSetup(qrData, secret) {
 
   const qrContainer = document.getElementById('qrcode');
   if (!qrContainer) return;
-
-  // Clear previous
   qrContainer.innerHTML = '';
 
-  // Try CDN QRCode library first
-  if (typeof QRCode !== 'undefined') {
-    QRCode.toCanvas(qrData, {
-      width: 220,
-      margin: 2,
-      color: { dark: '#1A1A1A', light: '#FFFFFF' }
-    }, function(err, canvas) {
-      if (!err && canvas) {
-        canvas.style.borderRadius = '8px';
-        canvas.style.padding = '8px';
-        canvas.style.background = '#FFFFFF';
-        qrContainer.appendChild(canvas);
-      } else {
-        fallbackQR(qrContainer, secret);
-      }
-    });
+  // Use local QR generator (no external dependencies)
+  if (typeof QRCodeGen !== 'undefined') {
+    const success = QRCodeGen.generateImage(qrData, 'qrcode');
+    if (!success) {
+      qrContainer.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.85rem;">⚠️ Could not generate QR. Use the key below.</p>';
+    }
   } else {
-    // Library not loaded — show message with manual key
-    fallbackQR(qrContainer, secret);
+    qrContainer.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.85rem;">⚠️ QR generator not loaded. Use the key below.</p>';
   }
 }
 
-function fallbackQR(container, secret) {
-  // Show a styled box with the secret key prominently displayed
-  container.innerHTML = `
-    <div style="padding:20px;background:var(--bg-card);border:2px dashed var(--border-color);border-radius:12px;text-align:center;">
-      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">⚠️ QR library could not load. Use the secret key below:</p>
-      <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--aurix-primary);word-break:break-all;font-weight:700;">${secret}</p>
-    </div>
-  `;
-}
-
-function verifyTwoFactor(e) {
+async function verifyTwoFactor(e) {
   e.preventDefault();
   const code = document.getElementById('twoFactorCode').value.trim();
   const user = firebase.auth().currentUser;
@@ -425,16 +402,50 @@ function verifyTwoFactor(e) {
     return;
   }
 
-  // Simple verification (in production, use proper TOTP library)
-  // For now, we store the secret and mark 2FA as enabled
   if (code.length === 6 && /^\d+$/.test(code)) {
-    localStorage.setItem('aurix_2fa_enabled_' + user.uid, 'true');
-    document.getElementById('twoFactorModal').style.display = 'none';
-    showDashboardAlert('Two-factor authentication enabled!', 'success');
-    updateTwoFactorUI(true);
+    const [expected, prev, next] = await Promise.all([totp(secret), totp(secret, -1), totp(secret, 1)]);
+    if (code === expected || code === prev || code === next) {
+      localStorage.setItem('aurix_2fa_enabled_' + user.uid, 'true');
+      document.getElementById('twoFactorModal').style.display = 'none';
+      showDashboardAlert('✅ Two-factor authentication enabled!', 'success');
+      updateTwoFactorUI(true);
+      document.getElementById('twoFactorCode').value = '';
+    } else {
+      showDashboardAlert('❌ Invalid code. Check your authenticator app time sync.', 'error');
+    }
   } else {
-    showDashboardAlert('Invalid code. Enter the 6-digit code from your authenticator app.', 'error');
+    showDashboardAlert('Enter a valid 6-digit code.', 'error');
   }
+}
+
+// TOTP using Web Crypto API (works in browser)
+async function totp(secret, timeStepOffset) {
+  timeStepOffset = timeStepOffset || 0;
+  const epoch = Math.floor(Date.now() / 1000) + timeStepOffset * 30;
+  const counter = Math.floor(epoch / 30);
+  const key = base32Decode(secret);
+  const buf = new ArrayBuffer(8);
+  const view = new DataView(buf);
+  view.setUint32(4, counter, false);
+  const cryptoKey = await crypto.subtle.importKey('raw', new Uint8Array(key), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, buf);
+  const hash = new Uint8Array(sig);
+  const offset = hash[hash.length - 1] & 0x0f;
+  const code = ((hash[offset] & 0x7f) << 24 | (hash[offset+1] & 0xff) << 16 | (hash[offset+2] & 0xff) << 8 | (hash[offset+3] & 0xff)) % 1000000;
+  return code.toString().padStart(6, '0');
+}
+
+function base32Decode(str) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = '';
+  for (const ch of str.toUpperCase()) {
+    const val = chars.indexOf(ch);
+    if (val < 0) continue;
+    bits += val.toString(2).padStart(5, '0');
+  }
+  const bytes = [];
+  for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.substr(i, 8), 2));
+  return bytes;
 }
 
 function disableTwoFactor() {
