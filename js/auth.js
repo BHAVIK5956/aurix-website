@@ -375,9 +375,24 @@ function showTwoFactorSetup(qrData, secret) {
   modal.style.display = 'flex';
   document.getElementById('twoFactorSecret').textContent = secret;
 
-  // Generate QR code as simple text (can be scanned by authenticator apps)
-  // The QR data contains the OTP URI
-  document.getElementById('twoFactorQR').textContent = qrData;
+  // Generate QR code using qrcode.js library
+  const qrContainer = document.getElementById('qrcode');
+  if (qrContainer && typeof QRCode !== 'undefined') {
+    qrContainer.innerHTML = '';
+    QRCode.toCanvas(qrData, {
+      width: 200,
+      margin: 2,
+      color: {
+        dark: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#1A1A1A',
+        light: getComputedStyle(document.body).getPropertyValue('--bg-card').trim() || '#FFFFFF'
+      }
+    }, function(err, canvas) {
+      if (!err && canvas) {
+        canvas.style.borderRadius = '8px';
+        qrContainer.appendChild(canvas);
+      }
+    });
+  }
 }
 
 function verifyTwoFactor(e) {

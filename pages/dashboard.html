@@ -6,6 +6,7 @@
   <title>Dashboard — AURIX</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" href="../assets/aurix-favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     .user-greeting { display:flex; align-items:center; gap:16px; margin-bottom:40px; }
     .user-avatar { width:48px; height:48px; border-radius:50%; background:var(--aurix-primary-bg); border:1.5px solid var(--aurix-primary-border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; color:var(--aurix-primary); font-family:var(--font-heading); }
@@ -121,11 +122,16 @@
       text-align: center;
       margin-bottom: 20px;
     }
-    .qr-placeholder code {
-      font-size: 0.7rem;
-      color: var(--text-tertiary);
-      word-break: break-all;
-      display: block;
+    #qrcode canvas {
+      border-radius: 8px;
+      padding: 8px;
+      background: #FFFFFF;
+    }
+    [data-theme="dark"] #qrcode canvas {
+      background: #FFFFFF;
+    }
+    .qr-copy-btn {
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -353,5 +359,25 @@
       updateDashNav();
     });
   </script>
-</body>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var copyBtn = document.querySelector('.qr-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        var el = document.getElementById('twoFactorSecret');
+        if (el) {
+          var range = document.createRange();
+          range.selectNode(el);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand('copy');
+          window.getSelection().removeAllRanges();
+          this.textContent = '✅ Copied!';
+          var t = this;
+          setTimeout(function() { t.textContent = 'Copy Key'; }, 2000);
+        }
+      });
+    }
+  });
+  </script></body>
 </html>
