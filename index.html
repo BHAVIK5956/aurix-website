@@ -10,31 +10,27 @@
 </head>
 <body>
 
-  <!-- Theme Toggle -->
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-    <span class="theme-icon">🌙</span>
-  </button>
-
   <!-- Navigation -->
-  <nav class="navbar">
+  <nav class="navbar" id="navbar">
     <a href="index.html" class="logo">AURIX<span>.</span></a>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#products">Products</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li><a href="pages/login.html" class="btn btn-primary" style="padding:8px 20px;font-size:0.85rem;">Sign In</a></li>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero" data-section="hero" class="nav-link active">Home</a></li>
+      <li><a href="#about" data-section="about" class="nav-link">About</a></li>
+      <li><a href="#products" data-section="products" class="nav-link">Products</a></li>
+      <li><a href="#contact" data-section="contact" class="nav-link">Contact</a></li>
+      <li id="authNavItem"><a href="pages/login.html" class="btn btn-primary nav-signin">Sign In</a></li>
     </ul>
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero">
+  <section class="hero" id="hero">
     <div class="hero-content">
       <div class="hero-badge animate-in">✨ Welcome to the Future</div>
       <h1 class="animate-in delay-1">AI That Grows<br>With You</h1>
       <p class="animate-in delay-2">Aurix is an AI companion and product suite built by a curious student from Bengaluru. We're making AI accessible, personal, and powerful — one project at a time.</p>
       <div class="hero-buttons animate-in delay-3">
-        <a href="pages/login.html" class="btn btn-primary">Get Started →</a>
-        <a href="#about" class="btn btn-outline">Learn More</a>
+        <a href="pages/login.html" class="btn btn-primary btn-hero">Get Started →</a>
+        <a href="#about" class="btn btn-outline btn-hero">Learn More</a>
       </div>
     </div>
   </section>
@@ -88,66 +84,42 @@
         <div class="product-icon">✨</div>
         <h3>Aurix</h3>
         <p>Your personal AI companion. Built to learn, adapt, and grow with you.</p>
-        <div class="product-meta">
-          <span>🐍 Python</span>
-          <span>🤖 AI</span>
-          <span>💬 Discord</span>
-        </div>
+        <div class="product-meta"><span>🐍 Python</span><span>🤖 AI</span><span>💬 Discord</span></div>
         <span class="product-status status-beta">In Development</span>
       </a>
       <a href="pages/product.html?id=nexus-prime" class="product-card">
         <div class="product-icon">🧠</div>
         <h3>Nexus Prime</h3>
         <p>A JARVIS-like AI assistant. Fully offline, continuous listening, hotword activation.</p>
-        <div class="product-meta">
-          <span>🧠 LLM</span>
-          <span>🎙️ Voice</span>
-          <span>🏠 Local</span>
-        </div>
+        <div class="product-meta"><span>🧠 LLM</span><span>🎙️ Voice</span><span>🏠 Local</span></div>
         <span class="product-status status-building">Coming Soon</span>
       </a>
       <a href="pages/product.html?id=cyber-nexus" class="product-card">
         <div class="product-icon">🔒</div>
         <h3>Cyber Nexus</h3>
         <p>Cybersecurity toolkit for learning and ethical hacking. Knowledge is the best defense.</p>
-        <div class="product-meta">
-          <span>🔒 Security</span>
-          <span>🐧 Linux</span>
-          <span>🛡️ Ethical</span>
-        </div>
+        <div class="product-meta"><span>🔒 Security</span><span>🐧 Linux</span><span>🛡️ Ethical</span></div>
         <span class="product-status status-building">Coming Soon</span>
       </a>
       <a href="pages/product.html?id=kcet-prep" class="product-card">
         <div class="product-icon">📚</div>
         <h3>KCET Prep App</h3>
         <p>AI-powered question generation and study companion for KCET aspirants.</p>
-        <div class="product-meta">
-          <span>📚 Education</span>
-          <span>🤖 AI</span>
-          <span>📱 Web App</span>
-        </div>
+        <div class="product-meta"><span>📚 Education</span><span>🤖 AI</span><span>📱 Web App</span></div>
         <span class="product-status status-beta">In Development</span>
       </a>
       <a href="pages/product.html?id=spatial-audio" class="product-card">
         <div class="product-icon">🎵</div>
         <h3>Spatial Audio Router</h3>
         <p>Route system audio to multiple output devices simultaneously. Windows app with 3D GUI.</p>
-        <div class="product-meta">
-          <span>🎵 Audio</span>
-          <span>⚡ Electron</span>
-          <span>🖥️ Windows</span>
-        </div>
+        <div class="product-meta"><span>🎵 Audio</span><span>⚡ Electron</span><span>🖥️ Windows</span></div>
         <span class="product-status status-live">Live</span>
       </a>
       <a href="pages/product.html?id=nexus-v" class="product-card">
         <div class="product-icon">🚀</div>
         <h3>Nexus V</h3>
         <p>Next-generation AI assistant. The evolution of Nexus Prime with advanced capabilities.</p>
-        <div class="product-meta">
-          <span>🚀 Next-Gen</span>
-          <span>🧠 AGI-ish</span>
-          <span>✨ Future</span>
-        </div>
+        <div class="product-meta"><span>🚀 Next-Gen</span><span>🧠 AGI-ish</span><span>✨ Future</span></div>
         <span class="product-status status-building">Coming Soon</span>
       </a>
     </div>
@@ -159,7 +131,7 @@
       <h2>Get In Touch</h2>
       <p>Have a question, idea, or just want to say hi? Reach out!</p>
     </div>
-    <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+    <div class="contact-center">
       <a href="mailto:bhavik@example.com" class="btn btn-outline">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-right:8px"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email Me

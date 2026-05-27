@@ -14,18 +14,16 @@
 </head>
 <body>
 
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><span class="theme-icon">🌙</span></button>
-
   <nav class="navbar">
     <a href="../index.html" class="logo">AURIX<span>.</span></a>
     <ul class="nav-links">
-      <li><a href="dashboard.html" style="color:var(--aurix-primary)">Dashboard</a></li>
-      <li><a href="../index.html#products">Products</a></li>
+      <li><a href="dashboard.html" class="nav-link-dashboard active">Dashboard</a></li>
+      <li><a href="#products" class="nav-link-dashboard" data-section="products">Products</a></li>
       <li><button class="btn btn-outline" style="padding:6px 16px;font-size:0.85rem;" onclick="handleLogout()">Logout</button></li>
     </ul>
   </nav>
 
-  <div class="dashboard">
+  <div class="dashboard" id="dashboard">
     <div class="user-greeting">
       <div class="user-avatar" id="userAvatar">U</div>
       <div>
@@ -34,7 +32,7 @@
       </div>
     </div>
 
-    <div class="dashboard-header">
+    <div class="dashboard-header" id="products">
       <h1>Products</h1>
       <p>Explore the AURIX product suite. Click on any product to learn more.</p>
     </div>
@@ -95,6 +93,7 @@
   <script src="../js/auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Check auth — if not logged in, redirect to login
       const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
       if (!user) {
         window.location.href = 'login.html';
@@ -104,6 +103,34 @@
       document.getElementById('userEmail').textContent = user.email || '';
       const initial = (user.name || 'U')[0].toUpperCase();
       document.getElementById('userAvatar').textContent = initial;
+
+      // Dashboard scroll-based nav highlighting
+      const sections = document.querySelectorAll('#dashboard, #products');
+      const navLinks = document.querySelectorAll('.nav-link-dashboard');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 100;
+          if (window.scrollY >= sectionTop) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('data-section') === current || 
+              (current === 'dashboard' && link.getAttribute('href') === 'dashboard.html')) {
+            link.classList.add('active');
+          }
+        });
+
+        // Default: Dashboard active at top
+        if (window.scrollY < 200) {
+          navLinks.forEach(link => link.classList.remove('active'));
+          navLinks[0].classList.add('active');
+        }
+      });
     });
   </script>
 </body>

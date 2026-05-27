@@ -175,29 +175,37 @@ a:hover { color: var(--aurix-primary-dark); }
   background: var(--aurix-primary-bg);
 }
 
-/* ── Theme Toggle ── */
-.theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-md);
+/* ── Nav Sign In Button ── */
+.nav-signin {
+  padding: 8px 22px !important;
+  font-size: 0.88rem !important;
+  border-radius: var(--radius-pill) !important;
 }
-.theme-toggle:hover {
-  border-color: var(--aurix-primary);
-  box-shadow: var(--aurix-glow);
-  transform: scale(1.05);
+
+/* ── Homepage Nav Link Active State ── */
+.nav-link {
+  position: relative;
+  transition: color var(--transition-fast);
+}
+.nav-link.active {
+  color: var(--aurix-primary) !important;
+  font-weight: 700;
+}
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100% !important;
+  height: 2px;
+  background: var(--aurix-primary);
+  border-radius: 2px;
+}
+
+/* ── Dashboard Nav Link Active State ── */
+.nav-link-dashboard.active {
+  color: var(--aurix-primary) !important;
+  font-weight: 700;
 }
 
 /* ── Navigation ── */
@@ -398,6 +406,20 @@ a:hover { color: var(--aurix-primary-dark); }
 .about-content p {
   margin-bottom: 14px;
   line-height: 1.8;
+}
+
+/* ── Contact Center ── */
+.contact-center {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── Hero Button Overrides ── */
+.btn-hero {
+  padding: 14px 32px;
+  font-size: 1rem;
 }
 
 /* ── Contact Buttons ── */
@@ -964,5 +986,5 @@ a:hover { color: var(--aurix-primary-dark); }
   .login-card { padding: 28px 22px; }
   .dashboard { padding: 80px 20px 40px; }
   .product-detail { padding: 80px 20px 40px; }
-  .theme-toggle { top: 12px; right: 12px; width: 42px; height: 42px; }
+
 }

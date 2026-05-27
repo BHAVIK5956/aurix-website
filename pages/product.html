@@ -9,13 +9,12 @@
 </head>
 <body>
 
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><span class="theme-icon">🌙</span></button>
-
   <nav class="navbar">
     <a href="../index.html" class="logo">AURIX<span>.</span></a>
     <ul class="nav-links">
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="../index.html#products">Products</a></li>
+      <li><a href="#" id="navHome">Home</a></li>
+      <li><a href="#" id="navDashboard" style="display:none;">Dashboard</a></li>
+      <li><a href="#" id="navSignin" style="display:none;">Sign In</a></li>
     </ul>
   </nav>
 
@@ -28,6 +27,28 @@
   </footer>
 
   <script src="../js/main.js"></script>
-  <script src="../js/auth.js"></script>
+  <script>
+    // Smart nav — show correct links based on auth state
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
+      const navHome = document.getElementById('navHome');
+      const navDashboard = document.getElementById('navDashboard');
+      const navSignin = document.getElementById('navSignin');
+
+      // Home always goes back to homepage
+      navHome.href = '../index.html';
+
+      if (user) {
+        // Logged in — show Dashboard
+        navDashboard.style.display = '';
+        navDashboard.href = 'dashboard.html';
+      } else {
+        // Not logged in — show Sign In
+        navSignin.style.display = '';
+        navSignin.href = 'login.html';
+      }
+    });
+  </script>
   <script src="../js/products.js"></script>
 </body>
+</html>
