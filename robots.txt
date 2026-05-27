@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bhavik5956.github.io/aurix-website/sitemap.xml

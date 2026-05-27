@@ -13,8 +13,8 @@
     <a href="../index.html" class="logo"><img src="../assets/aurix-logo.svg" alt="AURIX" height="32"></a>
     <ul class="nav-links">
       <li><a href="../index.html" class="nav-back-home">Home</a></li>
-      <li><a href="dashboard.html" id="navDashboard" style="display:none;">Dashboard</a></li>
-      <li><a href="login.html" id="navSignin">Sign In</a></li>
+      <li><a href="#" id="navDashboard" class="nav-product-link" style="display:none;">Dashboard</a></li>
+      <li><a href="#" id="navSignin" class="nav-product-link" style="display:none;">Sign In</a></li>
     </ul>
   </nav>
 
@@ -27,21 +27,39 @@
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/products.js"></script>
   <script>
-    // Handle nav based on auth — runs immediately
+    // Handle nav links on product page — works for both logged-in and guest
     document.addEventListener('DOMContentLoaded', () => {
       const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
       const navDash = document.getElementById('navDashboard');
       const navSign = document.getElementById('navSignin');
+      const backLink = document.getElementById('backLink');
+
       if (user) {
+        // Logged in: show Dashboard link
         navDash.style.display = '';
+        navDash.href = 'dashboard.html';
         navSign.style.display = 'none';
       } else {
+        // Not logged in: show Sign In link
         navDash.style.display = 'none';
         navSign.style.display = '';
+        navSign.href = 'login.html';
+      }
+
+      // Update back link inside product content
+      if (backLink) {
+        if (user) {
+          backLink.href = 'dashboard.html';
+          backLink.textContent = '← Back to Dashboard';
+        } else {
+          backLink.href = '../index.html#products';
+          backLink.textContent = '← Back to Products';
+        }
       }
     });
   </script>
-  <script src="../js/products.js"></script>
 </body>
 </html>

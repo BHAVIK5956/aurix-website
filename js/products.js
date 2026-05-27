@@ -193,23 +193,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const product = products[productId];
   const container = document.getElementById('productContent');
 
+  const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
+
   if (!product || !container) {
-    container.innerHTML = '<div style="text-align:center;padding:60px;"><h2>Product not found</h2><a href="dashboard.html" class="btn btn-primary" style="margin-top:20px;">Back to Dashboard</a></div>';
+    container.innerHTML = `
+      <div style="text-align:center;padding:60px;">
+        <h2>Product not found</h2>
+        <a href="${user ? 'dashboard.html' : '../index.html'}" class="btn btn-primary" style="margin-top:20px;">
+          ${user ? '← Back to Dashboard' : '← Back to Home'}
+        </a>
+      </div>`;
     return;
   }
 
+  // Back link: Dashboard if logged in, Products section if not
+  const backHref = user ? 'dashboard.html' : '../index.html#products';
+  const backText = user ? '← Back to Dashboard' : '← Back to Products';
+
   container.innerHTML = `
-    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    <a href="${backHref}" class="back-link" id="backLink">${backText}</a>
 
     <div class="product-hero">
-      <div class="icon">${product.icon}</div>
+      <div class="product-icon-large">${product.icon}</div>
       <h1>${product.name}</h1>
-      <p class="tagline">${product.tagline}</p>
-      <span class="product-status ${product.statusClass}" style="margin-top:16px;">${product.status}</span>
+      <p class="product-tagline">${product.tagline}</p>
+      <span class="product-status ${product.statusClass}">${product.status}</span>
     </div>
 
     <div class="product-stats">
-      ${product.stats.map(s => `<div class="stat-card"><div class="value">${s.value}</div><div class="label">${s.label}</div></div>`).join('')}
+      ${product.stats.map(s => `<div class="stat-card"><div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div></div>`).join('')}
     </div>
 
     <div class="product-section">
@@ -238,5 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ${product.installSteps.map(s => `<li>${s}</li>`).join('')}
       </ol>
     </div>
+
+    ${!user ? `<div class="product-cta">
+      <p>Want to explore more? <a href="login.html" class="btn btn-primary">Sign In</a> <a href="../index.html" class="btn btn-outline">Browse Products</a></p>
+    </div>` : ''}
   `;
 });

@@ -259,6 +259,48 @@ a:hover { color: var(--aurix-primary-dark); }
   white-space: nowrap;
 }
 
+/* ── Product Tagline ── */
+.product-tagline {
+  font-size: 1.1rem;
+  color: var(--text-tertiary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Product CTA (for guests) ── */
+.product-cta {
+  text-align: center;
+  padding: 32px;
+  margin-top: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--aurix-primary-bg);
+  border: 1px solid var(--aurix-primary-border);
+}
+.product-cta p {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+.product-cta .btn {
+  margin: 0 6px;
+}
+
+/* ── Product Nav Links ── */
+.nav-product-link {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
+.nav-product-link:hover {
+  border-color: var(--aurix-primary);
+  color: var(--aurix-primary);
+}
+
 /* ── Product page back home ── */
 .nav-back-home {
   color: var(--text-secondary);
