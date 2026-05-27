@@ -66,5 +66,5 @@ document.querySelectorAll('.product-card, .stat-card, .user-type-card').forEach(
 });
 
 // ── Console Easter Egg ──
-console.log('%c✨ AURIX — AI That Grows With You', 'font-size: 20px; font-weight: bold; color: #6c5ce7;');
+console.log('%c✨ AURIX — AI That Grows With You', 'font-size: 20px; font-weight: bold; color: #00BFA6;');
 console.log('%cBuilt with ❤️ by Bhavik in Bengaluru', 'font-size: 12px; color: #888;');
