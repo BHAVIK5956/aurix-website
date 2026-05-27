@@ -4,7 +4,7 @@
 // ============================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSy…fUXA",
+  apiKey: "AIzaSyAblqUFOmaeCkBKDdcZdjqy8719qnyfUXA",
   authDomain: "aurix-8ee5a.firebaseapp.com",
   projectId: "aurix-8ee5a",
   storageBucket: "aurix-8ee5a.firebasestorage.app",
