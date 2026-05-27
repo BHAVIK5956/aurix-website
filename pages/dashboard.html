@@ -10,6 +10,123 @@
     .user-greeting { display:flex; align-items:center; gap:16px; margin-bottom:40px; }
     .user-avatar { width:48px; height:48px; border-radius:50%; background:var(--aurix-primary-bg); border:1.5px solid var(--aurix-primary-border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; color:var(--aurix-primary); font-family:var(--font-heading); }
     .logout-btn { margin-left:auto; }
+
+    /* Security Section */
+    .security-section {
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1.5px solid var(--border-subtle);
+    }
+    .security-section h2 {
+      margin-bottom: 8px;
+    }
+    .security-section > p {
+      margin-bottom: 32px;
+    }
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .security-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .security-card h4 {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .security-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .security-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .status-enabled {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22C55E;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .status-disabled {
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+    .security-card .form-group {
+      margin-bottom: 12px;
+    }
+    .security-card .form-input {
+      font-size: 0.88rem;
+    }
+
+    /* 2FA Modal */
+    .two-factor-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .two-factor-modal-inner {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: var(--shadow-xl);
+    }
+    .two-factor-modal-inner h3 {
+      margin-bottom: 12px;
+    }
+    .two-factor-modal-inner p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .two-factor-secret {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-bottom: 16px;
+      word-break: break-all;
+      color: var(--aurix-primary);
+      font-weight: 600;
+    }
+    .qr-placeholder {
+      background: var(--bg-secondary);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .qr-placeholder code {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      word-break: break-all;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -19,6 +136,7 @@
     <ul class="nav-links">
       <li><a href="dashboard.html" class="nav-link-dashboard active">Dashboard</a></li>
       <li><a href="#products" class="nav-link-dashboard" data-section="products">Products</a></li>
+      <li><a href="#security" class="nav-link-dashboard" data-section="security">Security</a></li>
       <li id="dashboardAuthNav"></li>
       <li><button class="btn btn-outline" style="padding:6px 16px;font-size:0.85rem;" onclick="handleLogout()">Logout</button></li>
     </ul>
@@ -82,6 +200,88 @@
         <span class="product-status status-building">Coming Soon</span>
       </a>
     </div>
+
+    <!-- Security Section -->
+    <div class="security-section" id="security">
+      <h2>🔒 Account Security</h2>
+      <p>Manage your login methods and enable two-factor authentication for extra protection.</p>
+
+      <div id="dashboardAlertBox" class="alert" style="margin-bottom:20px;"></div>
+
+      <div class="security-grid">
+        <!-- Login Method Card -->
+        <div class="security-card">
+          <h4>📧 Email & Password</h4>
+          <div id="passwordStatusMsg" class="security-status status-disabled">✗ No password set</div>
+          <p id="passwordStatusText">You signed up with a Google/GitHub account. Set a password to also sign in with email.</p>
+          <form id="passwordSetupForm" onsubmit="setupPassword(event)" style="display:none;">
+            <div class="form-group">
+              <label>New Password</label>
+              <input class="form-input" type="password" id="newPassword" placeholder="Min 6 characters" minlength="6" required>
+            </div>
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <input class="form-input" type="password" id="confirmPassword" placeholder="Re-enter password" minlength="6" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Set Password</button>
+          </form>
+          <button id="showPasswordFormBtn" class="btn btn-outline" style="width:100%;" onclick="document.getElementById('passwordSetupForm').style.display='block';this.style.display='none'">
+            Set a Password
+          </button>
+        </div>
+
+        <!-- 2FA Card -->
+        <div class="security-card">
+          <h4>🛡️ Two-Factor Authentication</h4>
+          <div id="twoFactorStatus" class="security-status status-disabled">✗ Disabled</div>
+          <p>Add an extra layer of security. Even if someone gets your password, they can't sign in without your 2FA code.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button id="enable2FABtn" class="btn btn-primary" onclick="enableTwoFactor(event)">Enable 2FA</button>
+            <button id="disable2FABtn" class="btn btn-outline" style="display:none;color:#dc3545;border-color:rgba(220,53,69,0.3);" onclick="disableTwoFactor()">Disable 2FA</button>
+          </div>
+        </div>
+
+        <!-- Login History Card -->
+        <div class="security-card">
+          <h4>📋 Account Info</h4>
+          <p style="margin-bottom:12px;">
+            <strong>Login method:</strong> <span id="loginMethodDisplay">-</span>
+          </p>
+          <p style="margin-bottom:12px;">
+            <strong>Email verified:</strong> <span id="emailVerifiedDisplay">-</span>
+          </p>
+          <p style="margin-bottom:0;">
+            <strong>User ID:</strong> <code id="uidDisplay" style="font-size:0.75rem;color:var(--text-tertiary);">-</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2FA Setup Modal -->
+  <div class="two-factor-modal" id="twoFactorModal">
+    <div class="two-factor-modal-inner">
+      <h3>🛡️ Set Up Two-Factor Authentication</h3>
+      <p>Scan this QR code or enter the secret key manually in your authenticator app (Google Authenticator, Authy, etc.)</p>
+
+      <div class="qr-placeholder">
+        <p style="font-weight:600;margin-bottom:8px;color:var(--aurix-primary);">Authenticator Setup</p>
+        <p style="font-size:0.78rem;margin-bottom:12px;">Open your authenticator app → Add account → Enter key manually</p>
+        <div class="two-factor-secret" id="twoFactorSecret">GENERATING...</div>
+        <code id="twoFactorQR" style="display:none;"></code>
+      </div>
+
+      <form onsubmit="verifyTwoFactor(event)">
+        <div class="form-group">
+          <label>Enter the 6-digit code from your authenticator app</label>
+          <input class="form-input" type="text" id="twoFactorCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}" required style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:var(--font-mono);">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Verify & Enable</button>
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('twoFactorModal').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <footer class="footer">
@@ -94,19 +294,38 @@
   <script src="../js/auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Check auth immediately from localStorage (instant, no Firebase wait)
       const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
       if (!user) {
         window.location.href = 'login.html';
         return;
       }
-      // Show user data immediately
       document.getElementById('userName').textContent = `Welcome back, ${user.name || 'User'}!`;
       document.getElementById('userEmail').textContent = user.email || '';
       document.getElementById('userAvatar').textContent = (user.name || 'U')[0].toUpperCase();
 
+      // Show login method info
+      if (user.loginMethod === 'email') {
+        document.getElementById('loginMethodDisplay').textContent = 'Email & Password';
+      } else if (user.isEmailUser) {
+        document.getElementById('loginMethodDisplay').textContent = 'Email';
+      } else {
+        document.getElementById('loginMethodDisplay').textContent = 'Google / GitHub';
+      }
+      document.getElementById('emailVerifiedDisplay').textContent = user.emailVerified ? '✓ Yes' : '✗ Not verified';
+      document.getElementById('emailVerifiedDisplay').style.color = user.emailVerified ? '#22C55E' : '#dc3545';
+      document.getElementById('uidDisplay').textContent = user.uid || '-';
+
+      // Check if user already has a password set
+      if (user.isEmailUser || user.loginMethod === 'email') {
+        updatePasswordUI(true);
+      }
+
+      // Check 2FA status
+      const twoFAEnabled = localStorage.getItem('aurix_2fa_enabled_' + user.uid) === 'true';
+      updateTwoFactorUI(twoFAEnabled);
+
       // Dashboard scroll-based nav highlighting
-      const dashSections = document.querySelectorAll('#dashboard, #products');
+      const dashSections = document.querySelectorAll('#dashboard, #products, #security');
       const dashNavLinks = document.querySelectorAll('.nav-link-dashboard');
 
       function updateDashNav() {
@@ -126,7 +345,7 @@
         });
         if (window.scrollY < 200) {
           dashNavLinks.forEach(l => l.classList.remove('active'));
-          dashNavLinks[0].classList.add('active');
+          navLinks[0].classList.add('active');
         }
       }
 

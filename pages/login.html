@@ -7,6 +7,38 @@
   <meta name="description" content="Sign in to your AURIX account.">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" href="../assets/aurix-favicon.svg">
+  <style>
+    .login-forgot {
+      text-align: right;
+      margin-top: -8px;
+      margin-bottom: 16px;
+    }
+    .login-forgot a {
+      font-size: 0.82rem;
+      color: var(--aurix-primary);
+      text-decoration: none;
+    }
+    .login-forgot a:hover {
+      text-decoration: underline;
+    }
+    .login-email-verified {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: #F59E0B;
+    }
+    .login-email-verified button {
+      margin-left: auto;
+      font-size: 0.78rem;
+      padding: 4px 12px;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,13 +48,17 @@
         <a href="../index.html"><img src="../assets/aurix-logo.svg" alt="AURIX" height="32"></a>
       </div>
 
-      <div id="loginUser" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"></div>
+      <div id="loginUser" style="display:none;align-items:center;gap:12px;margin-bottom:16px;"></div>
       <div class="login-tabs">
         <button class="login-tab active" data-tab="signin" onclick="switchTab('signin')">Sign In</button>
         <button class="login-tab" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
       </div>
 
       <div id="alertBox" class="alert"></div>
+      <div id="emailVerifyNotice" class="login-email-verified" style="display:none;">
+        <span>⚠️ Please verify your email address</span>
+        <button class="btn btn-outline" style="padding:4px 12px;font-size:0.78rem;" onclick="resendVerification()">Resend</button>
+      </div>
 
       <!-- Sign In Form -->
       <div id="signin-section" class="form-section active">
@@ -35,7 +71,7 @@
           Continue with GitHub
         </button>
 
-        <div class="login-divider"><span>or continue with email</span></div>
+        <div class="login-divider"><span>or sign in with email</span></div>
 
         <form id="signinForm" onsubmit="handleEmailSignIn(event)">
           <div class="form-group">
@@ -45,6 +81,9 @@
           <div class="form-group">
             <label for="signinPassword">Password</label>
             <input class="form-input" type="password" id="signinPassword" placeholder="••••••••" required minlength="6">
+          </div>
+          <div class="login-forgot">
+            <a href="#" onclick="handleForgotPassword(event)">Forgot password?</a>
           </div>
           <button type="submit" class="btn btn-primary submit-btn">Sign In</button>
         </form>
@@ -73,9 +112,12 @@
             <input class="form-input" type="email" id="signupEmail" placeholder="you@example.com" required>
           </div>
           <div class="form-group">
-            <label for="signupPassword">Password</label>
-            <input class="form-input" type="password" id="signupPassword" placeholder="Min 6 characters" required minlength="6">
+            <label for="signupPassword">Password <span style="color:var(--text-tertiary);font-weight:400;">(min 6 characters)</span></label>
+            <input class="form-input" type="password" id="signupPassword" placeholder="Create a strong password" required minlength="6">
           </div>
+          <p style="font-size:0.78rem;color:var(--text-tertiary);margin-bottom:16px;">
+            By signing up, you'll receive a verification email. You must verify your email before signing in.
+          </p>
           <button type="submit" class="btn btn-primary submit-btn">Create Account</button>
         </form>
       </div>
@@ -91,7 +133,6 @@
   <script src="../js/main.js"></script>
   <script src="../js/auth.js"></script>
   <script>
-    // If already logged in, redirect to dashboard immediately
     document.addEventListener('DOMContentLoaded', () => {
       const user = JSON.parse(localStorage.getItem('aurix_user') || 'null');
       if (user) {
