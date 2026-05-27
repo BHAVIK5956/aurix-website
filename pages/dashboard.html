@@ -6,7 +6,7 @@
   <title>Dashboard — AURIX</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" href="../assets/aurix-favicon.svg">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js" onerror="this.src='https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js'"></script>
   <style>
     .user-greeting { display:flex; align-items:center; gap:16px; margin-bottom:40px; }
     .user-avatar { width:48px; height:48px; border-radius:50%; background:var(--aurix-primary-bg); border:1.5px solid var(--aurix-primary-border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; color:var(--aurix-primary); font-family:var(--font-heading); }
@@ -268,13 +268,15 @@
   <div class="two-factor-modal" id="twoFactorModal">
     <div class="two-factor-modal-inner">
       <h3>🛡️ Set Up Two-Factor Authentication</h3>
-      <p>Scan this QR code or enter the secret key manually in your authenticator app (Google Authenticator, Authy, etc.)</p>
+      <p>Scan the QR code below with your authenticator app, or enter the secret key manually.</p>
 
       <div class="qr-placeholder">
-        <p style="font-weight:600;margin-bottom:8px;color:var(--aurix-primary);">Authenticator Setup</p>
-        <p style="font-size:0.78rem;margin-bottom:12px;">Open your authenticator app → Add account → Enter key manually</p>
+        <p style="font-weight:600;margin-bottom:8px;color:var(--aurix-primary);">&#128241; Scan with Authenticator App</p>
+        <p style="font-size:0.78rem;margin-bottom:12px;">Open Google Authenticator, Authy, or any TOTP app &rarr; Tap &quot;+&quot; &rarr; Scan QR code</p>
+        <div id="qrcode" style="display:flex;justify-content:center;margin-bottom:16px;"></div>
+        <p style="font-size:0.75rem;color:var(--text-tertiary);margin-bottom:6px;">Can&#39;t scan? Enter this key manually:</p>
         <div class="two-factor-secret" id="twoFactorSecret">GENERATING...</div>
-        <code id="twoFactorQR" style="display:none;"></code>
+        <button type="button" id="copyKeyBtn" class="btn btn-outline" style="font-size:0.78rem;padding:4px 16px;margin-top:10px;">Copy Key</button>
       </div>
 
       <form onsubmit="verifyTwoFactor(event)">
@@ -289,6 +291,21 @@
       </form>
     </div>
   </div>
+
+  <script>
+  document.getElementById('copyKeyBtn').addEventListener('click', function() {
+    var el = document.getElementById('twoFactorSecret');
+    var range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+    this.textContent = '✅ Copied!';
+    var t = this;
+    setTimeout(function() { t.textContent = 'Copy Key'; }, 2000);
+  });
+  </script>
 
   <footer class="footer">
     <p>© 2026 AURIX. Built with ❤️ by Bhavik in Bengaluru.</p>

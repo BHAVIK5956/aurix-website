@@ -375,24 +375,42 @@ function showTwoFactorSetup(qrData, secret) {
   modal.style.display = 'flex';
   document.getElementById('twoFactorSecret').textContent = secret;
 
-  // Generate QR code using qrcode.js library
   const qrContainer = document.getElementById('qrcode');
-  if (qrContainer && typeof QRCode !== 'undefined') {
-    qrContainer.innerHTML = '';
+  if (!qrContainer) return;
+
+  // Clear previous
+  qrContainer.innerHTML = '';
+
+  // Try CDN QRCode library first
+  if (typeof QRCode !== 'undefined') {
     QRCode.toCanvas(qrData, {
-      width: 200,
+      width: 220,
       margin: 2,
-      color: {
-        dark: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#1A1A1A',
-        light: getComputedStyle(document.body).getPropertyValue('--bg-card').trim() || '#FFFFFF'
-      }
+      color: { dark: '#1A1A1A', light: '#FFFFFF' }
     }, function(err, canvas) {
       if (!err && canvas) {
         canvas.style.borderRadius = '8px';
+        canvas.style.padding = '8px';
+        canvas.style.background = '#FFFFFF';
         qrContainer.appendChild(canvas);
+      } else {
+        fallbackQR(qrContainer, secret);
       }
     });
+  } else {
+    // Library not loaded — show message with manual key
+    fallbackQR(qrContainer, secret);
   }
+}
+
+function fallbackQR(container, secret) {
+  // Show a styled box with the secret key prominently displayed
+  container.innerHTML = `
+    <div style="padding:20px;background:var(--bg-card);border:2px dashed var(--border-color);border-radius:12px;text-align:center;">
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">⚠️ QR library could not load. Use the secret key below:</p>
+      <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--aurix-primary);word-break:break-all;font-weight:700;">${secret}</p>
+    </div>
+  `;
 }
 
 function verifyTwoFactor(e) {
